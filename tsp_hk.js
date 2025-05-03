@@ -1,63 +1,35 @@
-// This is NOT my implementation, this is Aidan Newberry's frop his repo 
-// https://github.com/COSC3020/tsp-held-karp-regtoga.git
+// This is NOT my implementation, this is Noah Vogt's from his repo 
+// https://github.com/COSC3020/tsp-comparison-noahvogt1.git
 
+// Held-Karp implementation
 function tsp_hk(distance_matrix) {
-    var cities = [];
-    for (var i = 0; i < distance_matrix.length; i++) {
-        cities.push(i);
+    let minDist = Infinity;
+
+    for (let start = 0; start < distance_matrix.length; start++) {
+        let visited = new Set([start]);
+        let dist = rec_hk(distance_matrix, start, visited);
+        if (dist < minDist) minDist = dist;
     }
-
-    //This selects multiple start cites over time. i is the start city.
-    var minTour = Infinity;
-
-    //I moved memo out of the loop so that it only clears the cache for every new call
-    //I had thought that you wanted us to clear the cache after every starting position because you said: 
-    //"If you use memoization, make sure that the cache is reset every time the function is called such that multiple calls"
-    //but i interpreted it wrong.
-    var memo = {};
-
-    for (var i = 0; i < cities.length; i++) {
-        var cost = heldKarp(cities, i, distance_matrix, memo);
-        if (cost < minTour) {
-            minTour = cost;
-        }
-    }
-
-    if (minTour == Infinity) {
-        minTour = 0;
-    }
-    return minTour;
+    return minDist === Infinity ? 0 : minDist;
 }
 
+function rec_hk(matrix, current, visited, memoization = {}) {
+    let key = current + "|" + [...visited].sort();
 
-function heldKarp(cities, start, distance_matrix, memo) {
-    var key = cities.sort() + " divider " + start;
-    if (memo[key] != undefined) {
-        return memo[key];
+    if (memoization[key] != undefined) return memoization[key];
+    if (visited.size === matrix.length) return 0;
+
+    let minDist = Infinity;
+
+    for (let i = 0; i < matrix.length; i++) {
+        if (!visited.has(i) && matrix[current][i] !== 0) {
+            visited.add(i);
+            let dist = matrix[current][i] + rec_hk(matrix, i, visited, memoization);
+            if (dist < minDist) minDist = dist;
+            visited.delete(i);
+        }
     }
 
-    if (cities.length == 2) {
-        let result;
-        if (cities[0] == start) {
-            result = distance_matrix[start][cities[1]];
-        } else {
-            result = distance_matrix[start][cities[0]];
-        }
-        memo[key] = result;
-        return result;
-    } else {
-        var holderofpaths = [];
-        var city_minus_start = cities.filter(element => element !== start);
-
-        for (var i = 0; i < cities.length; i++) {
-            //here i pick a new start city that is not the old start city.
-            if (cities[i] != start) {
-                var distance_from_start_to_city = distance_matrix[start][cities[i]];
-                holderofpaths.push(heldKarp(city_minus_start, cities[i], distance_matrix, memo) + distance_from_start_to_city);
-            }
-        }
-
-        memo[key] = Math.min(...holderofpaths);
-        return memo[key];
-    }
+    memoization[key] = minDist;
+    return minDist;
 }

@@ -29,6 +29,8 @@ The length of the tour of Held-Karp will always be less than or equal to the tou
 
 What I did was I took my implementation of tsp_Local_Search and compared it to Noah Vogn's version of Held-Karp. I started by creating a function that would generaterandom distance matrix's that has an input of the size of matrix I want. I then put this inside of a loop to run an $i$ number of times. This would generate a unique distance matrix of whatever input size I needed for that iteration. I then found sime simple timing code and timed both implementations. After each have found a path, I then output the number of nodes, the distance of the path they found, and the time it took them into a JSON file. Using this JSON file I created some very simple Python code to plot the input size vs time and input size vs path length graphs.
 
+The longest runtime I’ve observed with my Held-Karp TSP implementation was for 20 cities, which takes around 19 to 21 minutes. However, the problem never finishes for 21 cities, even after running for up to 12 hours. Based on timing data from 0 to 20 cities, I expected the 21-city case to take about 1 hour, or at most 1 hour and 45 minutes. I'm unsure why the runtime increases so drastically beyond 20 cities.
+
 ## Sources
 
 I used [GeeksForGeeks](https://www.geeksforgeeks.org/graph-plotting-in-python-set-1/) to help plot my data. It was actually surprisingly easy and will probably be what I use to plot data from now as as taking data from a JSON format is really easy using it.

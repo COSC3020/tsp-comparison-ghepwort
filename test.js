@@ -5,105 +5,57 @@ eval(fs.readFileSync('tsp_hk.js') + '');
 eval(fs.readFileSync('tsp_ls.js') + '');
 eval(fs.readFileSync('generateAdjMatrix.js') + '');
 
+const filePath = 'tsp_results.json';
 
+// Load existing data (if file exists)
+let hk_data = [];
+let ls_data = [];
 
-// Held-Karp Testing
-hk_data = [];
-for (i = 0; i <= 20; i++) {
-    graph = generateDistanceAdjMatrix(i, 100);
-
-    start = performance.now();
-    hk_result = tsp_hk(graph);
-    end = performance.now();
-    hk_data.push([i, hk_result, end - start]);
-
-    console.log(`${i} Nodes Finished`);
+if (fs.existsSync(filePath)) {
+    const existing = JSON.parse(fs.readFileSync(filePath));
+    hk_data = existing.heldKarp || [];
+    ls_data = existing.localSearch || [];
 }
 
+for (let i = 0; i <= 22; i++) {
+    const graph = generateDistanceAdjMatrix(i, 100);
 
-hk_data_temp = hk_data.map(inner => inner[0]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('hk_data_1.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});
+    // Held-Karp timing
+    let start = performance.now();
+    const hk_result = tsp_hk(graph);
+    let end = performance.now();
+    const hk_time = end - start;
 
-
-hk_data_temp = hk_data.map(inner => inner[1]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('hk_data_2.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});
-
-
-hk_data_temp = hk_data.map(inner => inner[2]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('hk_data_3.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});
-
-
-
-console.log();
-console.log();
-console.log();
-console.log();
-
-
-
-// Local Search Testing
-ls_data = [];
-for (let i = 0; i <= 20000; i += 1000) {
-    graph = generateDistanceAdjMatrix(i, 100);
-
+    // Local Search timing
     start = performance.now();
-    ls_result = tsp_ls(graph);
+    const ls_result = tsp_ls(graph);
     end = performance.now();
-    ls_data.push([i, ls_result, end - start]);
+    const ls_time = end - start;
 
+    // Append to arrays
+    hk_data.push({
+        nodes: i,
+        result: hk_result,
+        time: hk_time
+    });
+
+    ls_data.push({
+        nodes: i,
+        result: ls_result,
+        time: ls_time
+    });
+
+    // Log output
     console.log(`${i} Nodes Finished`);
+    console.log(`Held-Karp Time: ${hk_time.toFixed(4)} ms`);
+    console.log(`Local Search Time: ${ls_time.toFixed(4)} ms`);
+    console.log();
+
+    // Save updated results to file
+    const allData = {
+        heldKarp: hk_data,
+        localSearch: ls_data
+    };
+
+    fs.writeFileSync(filePath, JSON.stringify(allData, null, 2));
 }
-
-
-hk_data_temp = ls_data.map(inner => inner[0]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('ls_data_1.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});
-
-
-hk_data_temp = ls_data.map(inner => inner[1]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('ls_data_2.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});
-
-
-hk_data_temp = ls_data.map(inner => inner[2]);
-hk_data_temp = hk_data_temp.join('\n');
-fs.writeFile('ls_data_3.txt', hk_data_temp, (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-    } else {
-        console.log('File written successfully!');
-    }
-});

@@ -25,3 +25,14 @@ to this markdown file.
 
 ## Answers
 
+The length of the tour of Held-Karp will always be less than or equal to the tour length of Local Search. This is because while Held-Karp finds the shortest possible path, Local Search essentially find a path that is close enough to being the smallest based upon some heuristic. This means that Local Search very easily can produce a result larger than that of the Held-Karp path. We also know that the Held-Karp path is the shortest possible path so at best Local Search can be the same length as Held-Karp. Combining those two peices of information we get that the Local Search path can be either larger or equal to that of Held-Karp.
+
+What I did was I took my implementation of tsp_Local_Search and compared it to Noah Vogn's version of Held-Karp. I started by creating a function that would generaterandom distance matrix's that has an input of the size of matrix I want. I then put this inside of a loop to run an $i$ number of times. This would generate a unique distance matrix of whatever input size I needed for that iteration. I then found sime simple timing code and timed both implementations. After each have found a path, I then output the number of nodes, the distance of the path they found, and the time it took them into a JSON file. Using this JSON file I created some very simple Python code to plot the input size vs time and input size vs path length graphs.
+
+## Sources
+
+I used [GeeksForGeeks](https://www.geeksforgeeks.org/graph-plotting-in-python-set-1/) to help plot my data. It was actually surprisingly easy and will probably be what I use to plot data from now as as taking data from a JSON format is really easy using it.
+
+I used [Noah Vogt's](https://github.com/COSC3020/tsp-comparison-noahvogt1.git) implementation of TSP Held-Karp for this program.
+
+I certify that I have listed all sources used to complete this exercise, including the use of any Large Language Models. All of the work is my own, except where stated otherwise. I am aware that plagiarism carries severe penalties and that if plagiarism is suspected, charges may be filed against me without prior notice.
